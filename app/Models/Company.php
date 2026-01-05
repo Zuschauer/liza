@@ -12,6 +12,11 @@ class Company extends Model
         'slug',
         'access_code',
         'is_active',
+        'content',
+    ];
+
+    protected $casts = [
+        'content' => 'array',
     ];
 
     protected static function booted()
