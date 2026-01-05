@@ -44,6 +44,37 @@ class CompanyResource extends Resource
                 Forms\Components\Toggle::make('is_active')
                     ->label('Aktiv')
                     ->default(true),
+
+                Forms\Components\Repeater::make('content')
+                    ->label('Seiteninhalt')
+                    ->collapsed()
+                    ->schema([
+                        Forms\Components\Select::make('type')
+                            ->label('Block-Typ')
+                            ->options([
+                                'heading' => 'Überschrift',
+                                'text' => 'Text',
+                                'list' => 'Liste',
+                            ])
+                            ->required()
+                            ->reactive(),
+
+                        Forms\Components\TextInput::make('heading')
+                            ->label('Überschrift')
+                            ->visible(fn ($get) => $get('type') === 'heading'),
+
+                        Forms\Components\RichEditor::make('text')
+                            ->label('Text')
+                            ->visible(fn ($get) => $get('type') === 'text'),
+
+                        Forms\Components\Repeater::make('items')
+                            ->label('Listenpunkte')
+                            ->schema([
+                                Forms\Components\TextInput::make('item')->label('Punkt'),
+                            ])
+                            ->visible(fn ($get) => $get('type') === 'list'),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
     public static function infolist(Schema $schema): Schema
