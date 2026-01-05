@@ -12,6 +12,7 @@ use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Models\Company;
 use BackedEnum;
 use Filament\Resources\Resource;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -26,6 +27,13 @@ class CompanyResource extends Resource
     {
         return $schema
             ->schema([
+                SpatieMediaLibraryFileUpload::make('logo')
+                    ->collection('logo')
+                    ->label('Firmenlogo')
+                    ->image()
+                    ->imageEditor()
+                    ->helperText('Optionales Logo für die öffentliche Seite')
+                    ->columnSpanFull(),
                 Forms\Components\TextInput::make('name')
                     ->label('Firmenname')
                     ->required()
@@ -55,6 +63,7 @@ class CompanyResource extends Resource
                                 'heading' => 'Überschrift',
                                 'text' => 'Text',
                                 'list' => 'Liste',
+                                'image' => 'Bild',
                             ])
                             ->required()
                             ->reactive(),
@@ -73,6 +82,14 @@ class CompanyResource extends Resource
                                 Forms\Components\TextInput::make('item')->label('Punkt'),
                             ])
                             ->visible(fn ($get) => $get('type') === 'list'),
+
+                        SpatieMediaLibraryFileUpload::make('image')
+                            ->collection('images')
+                            ->label('Bild')
+                            ->visible(fn ($get) => $get('type') === 'image')
+                            ->image()
+                            ->imageEditor()
+                            ->helperText('Bild für diesen Block'),
                     ])
                     ->columnSpanFull(),
             ]);
