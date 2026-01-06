@@ -45,9 +45,9 @@ class CompanyResource extends Resource
                     ->helperText('Wird automatisch aus dem Firmennamen erstellt'),
 
                 Forms\Components\TextInput::make('access_code')
-                    ->disabled()
-                    ->dehydrated()
-                    ->helperText('Automatisch generierter Zugangscode'),
+                    ->required()
+                    ->maxLength(255)
+                    ->helperText('Zugangscode'),
 
                 Forms\Components\Toggle::make('is_active')
                     ->label('Aktiv')

@@ -46,23 +46,22 @@
     <h1>Willkommen</h1>
     <p>Bitte geben Sie Ihren Zugangscode ein.</p>
 
-    <form method="POST" action="{{ route('access.submit') }}">
+    <form action="{{ route('access.verify') }}" method="POST">
         @csrf
-
-        <input
-            type="text"
-            name="code"
-            placeholder="Zugangscode"
-            required
-            autofocus
-        >
-
-        <button type="submit">Weiter</button>
-
-        @error('code')
-        <div class="error">{{ $message }}</div>
-        @enderror
+        <div>
+            <label for="code">Zugangscode</label>
+            <input type="text" name="code" id="code" required>
+        </div>
+        <button type="submit">Zugangscode eingeben</button>
     </form>
+
+    @if ($errors->any())
+        <div>
+            @foreach ($errors->all() as $error)
+                <p>{{ $error }}</p>
+            @endforeach
+        </div>
+    @endif
 </div>
 
 </body>

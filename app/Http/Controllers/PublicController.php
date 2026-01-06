@@ -18,8 +18,12 @@ class PublicController extends Controller
     /**
      * Code prüfen & weiterleiten
      */
+    /**
+     * Code prüfen & weiterleiten
+     */
     public function access(Request $request)
     {
+        // Validierung des eingegebenen Codes
         $request->validate([
             'code' => ['required', 'string'],
         ]);
@@ -28,13 +32,13 @@ class PublicController extends Controller
             ->where('is_active', true)
             ->first();
 
-        if (! $company) {
+        if (!$company) {
             return back()->withErrors([
                 'code' => 'Ungültiger oder inaktiver Zugangscode',
             ]);
         }
 
-        return redirect()->route('company.page', $company->slug);
+        return redirect()->route('company.show', ['slug' => $company->slug]);
     }
 
     /**
@@ -42,10 +46,12 @@ class PublicController extends Controller
      */
     public function show(string $slug)
     {
+        // Suche nach der Firma mit dem Slug und prüfe, ob sie aktiv ist
         $company = Company::where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
+        // Gib die Firmendaten an die View weiter
         return view('public.company', compact('company'));
     }
 }
