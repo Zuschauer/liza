@@ -83,13 +83,14 @@ class CompanyResource extends Resource
                             ])
                             ->visible(fn ($get) => $get('type') === 'list'),
 
-                        SpatieMediaLibraryFileUpload::make('image')
-                            ->collection('images')
-                            ->label('Bild')
-                            ->visible(fn ($get) => $get('type') === 'image')
+                        SpatieMediaLibraryFileUpload::make('images')
+                            ->collection('images') // Collection für mehrere Bilder
+                            ->label('Bilder hinzufügen')
+                            ->multiple() // Hier erlaubt das Hochladen mehrerer Bilder
                             ->image()
                             ->imageEditor()
-                            ->helperText('Bild für diesen Block'),
+                            ->helperText('Mehrere Bilder für diesen Block')
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
             ]);
