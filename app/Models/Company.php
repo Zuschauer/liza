@@ -26,6 +26,8 @@ class Company extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('logo')->singleFile();
+        $this->addMediaCollection('hero_images');
+        $this->addMediaCollection('block_images');
     }
 
     protected static function booted()

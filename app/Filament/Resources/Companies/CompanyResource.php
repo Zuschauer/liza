@@ -6,13 +6,18 @@ use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Resources\Companies\Pages\EditCompany;
 use App\Filament\Resources\Companies\Pages\ListCompanies;
 use App\Filament\Resources\Companies\Pages\ViewCompany;
-use App\Filament\Resources\Companies\Schemas\CompanyForm;
 use App\Filament\Resources\Companies\Schemas\CompanyInfolist;
 use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Models\Company;
 use BackedEnum;
-use Filament\Resources\Resource;
+use Filament\Forms\Components\ColorPicker;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Slider;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
@@ -23,6 +28,7 @@ class CompanyResource extends Resource
     protected static ?string $model = Company::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -34,17 +40,18 @@ class CompanyResource extends Resource
                     ->imageEditor()
                     ->helperText('Optionales Logo für die öffentliche Seite')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('name')
+
+                TextInput::make('name')
                     ->label('Firmenname')
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('slug')
+                TextInput::make('slug')
                     ->disabled()
                     ->dehydrated()
                     ->helperText('Wird automatisch aus dem Firmennamen erstellt'),
 
-                Forms\Components\TextInput::make('access_code')
+                TextInput::make('access_code')
                     ->required()
                     ->maxLength(255)
                     ->helperText('Zugangscode'),
@@ -60,6 +67,9 @@ class CompanyResource extends Resource
                         Forms\Components\Select::make('type')
                             ->label('Block-Typ')
                             ->options([
+                                'hero' => 'Hero-Bereich',
+                                'text_section' => 'Textbereich',
+                                'skills' => 'Skills-Bereich',
                                 'heading' => 'Überschrift',
                                 'text' => 'Text',
                                 'list' => 'Liste',
@@ -68,6 +78,123 @@ class CompanyResource extends Resource
                             ->required()
                             ->reactive(),
 
+                        // Hero Block Fields
+                        TextInput::make('title')
+                            ->label('Titel')
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        TextInput::make('subtitle')
+                            ->label('Untertitel')
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        SpatieMediaLibraryFileUpload::make('background_image')
+                            ->collection('hero_images')
+                            ->label('Hintergrundbild')
+                            ->image()
+                            ->imageEditor()
+                            ->helperText('Empfohlene Größe: 1920x1080px')
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        TextInput::make('button_text')
+                            ->label('Button-Text')
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        TextInput::make('button_url')
+                            ->label('Button-URL')
+                            ->url()
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        Select::make('alignment')
+                            ->label('Ausrichtung')
+                            ->options([
+                                'left' => 'Links',
+                                'center' => 'Zentriert',
+                                'right' => 'Rechts',
+                            ])
+                            ->default('center')
+                            ->visible(fn ($get) => $get('type') === 'hero'),
+
+                        // Text Section Block Fields
+                        TextInput::make('heading')
+                            ->label('Überschrift')
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'text_section'),
+
+                        RichEditor::make('content')
+                            ->label('Inhalt')
+                            ->toolbarButtons([
+                                'bold',
+                                'italic',
+                                'strike',
+                                'underline',
+                                'h2',
+                                'h3',
+                                'bulletList',
+                                'orderedList',
+                                'link',
+                            ])
+                            ->visible(fn ($get) => $get('type') === 'text_section'),
+
+                        ColorPicker::make('background_color')
+                            ->label('Hintergrundfarbe')
+                            ->default('#ffffff')
+                            ->visible(fn ($get) => $get('type') === 'text_section'),
+
+                        ColorPicker::make('text_color')
+                            ->label('Textfarbe')
+                            ->default('#1f2937')
+                            ->visible(fn ($get) => $get('type') === 'text_section'),
+
+                        Select::make('padding')
+                            ->label('Innenabstand')
+                            ->options([
+                                'none' => 'Kein',
+                                'small' => 'Klein',
+                                'medium' => 'Mittel',
+                                'large' => 'Groß',
+                            ])
+                            ->default('medium')
+                            ->visible(fn ($get) => $get('type') === 'text_section'),
+
+                        // Skills Block Fields
+                        TextInput::make('heading')
+                            ->label('Überschrift')
+                            ->maxLength(255)
+                            ->visible(fn ($get) => $get('type') === 'skills'),
+
+                        Textarea::make('description')
+                            ->label('Beschreibung')
+                            ->rows(3)
+                            ->visible(fn ($get) => $get('type') === 'skills'),
+
+                        Forms\Components\Repeater::make('skills')
+                            ->label('Skills')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Skill-Name')
+                                    ->required()
+                                    ->maxLength(255),
+
+                                Slider::make('level')
+                                    ->label('Level')
+                                    ->minValue(0)
+                                    ->maxValue(100)
+                                    ->default(50),
+
+                                ColorPicker::make('color')
+                                    ->label('Farbe')
+                                    ->default('#3b82f6'),
+                            ])
+                            ->columns(3)
+                            ->defaultItems(0)
+                            ->addActionLabel('Skill hinzufügen')
+                            ->visible(fn ($get) => $get('type') === 'skills'),
+
+                        // Legacy Fields
                         Forms\Components\TextInput::make('heading')
                             ->label('Überschrift')
                             ->visible(fn ($get) => $get('type') === 'heading'),
@@ -84,17 +211,19 @@ class CompanyResource extends Resource
                             ->visible(fn ($get) => $get('type') === 'list'),
 
                         SpatieMediaLibraryFileUpload::make('images')
-                            ->collection('images') // Collection für mehrere Bilder
+                            ->collection('images')
                             ->label('Bilder hinzufügen')
-                            ->multiple() // Hier erlaubt das Hochladen mehrerer Bilder
+                            ->multiple()
                             ->image()
                             ->imageEditor()
                             ->helperText('Mehrere Bilder für diesen Block')
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->visible(fn ($get) => $get('type') === 'image'),
                     ])
                     ->columnSpanFull(),
             ]);
     }
+
     public static function infolist(Schema $schema): Schema
     {
         return CompanyInfolist::configure($schema);

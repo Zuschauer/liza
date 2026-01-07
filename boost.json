@@ -9,6 +9,8 @@
         "phpstorm",
         "vscode"
     ],
-    "guidelines": [],
+    "guidelines": [
+        "filament/filament"
+    ],
     "herd_mcp": true
 }

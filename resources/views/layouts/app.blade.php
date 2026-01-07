@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Willkommen bei unserer Firma')</title>
 
-    <!-- Tailwind CSS (über Vite) -->
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <!-- Tailwind CSS (CDN als Fallback) -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100 font-sans">
