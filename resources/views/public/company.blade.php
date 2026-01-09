@@ -21,7 +21,7 @@
             @foreach($content as $block)
                 @php
                     $type = $block['type'] ?? null;
-                    $data = $block['data'] ?? [];
+                    $data = $block; // Der gesamte Block ist das Daten-Array
                 @endphp
 
                 @if($type === 'hero')
@@ -42,19 +42,25 @@
                     </ul>
                 @elseif($type === 'image')
                     <div class="image-block mt-6">
-                        @if(!empty($block['images']))
-                            @if(is_array($block['images']))
-                                @foreach($block['images'] as $imageId)
-                                    @php
-                                        $media = $company->getMedia('images')->firstWhere('id', $imageId);
-                                    @endphp
-                                    @if($media)
-                                        <div class="mb-4">
-                                            <img src="{{ $media->getUrl() }}" alt="Firmenbild" class="w-full h-auto rounded-lg shadow-lg">
-                                        </div>
-                                    @endif
-                                @endforeach
-                            @endif
+                        @php
+                            $imageIds = $block['images'] ?? [];
+                            $medias = $company->getMedia('images');
+                            // Wenn spezifische IDs gegeben sind, filtere danach, sonst zeige alle
+                            if (!empty($imageIds) && is_array($imageIds)) {
+                                $medias = $medias->filter(function ($media) use ($imageIds) {
+                                    return in_array($media->id, $imageIds);
+                                });
+                            }
+                        @endphp
+
+                        @if($medias->count() > 0)
+                            @foreach($medias as $media)
+                                <div class="mb-4">
+                                    <img src="{{ $media->getUrl() }}" alt="Firmenbild" class="w-full h-auto rounded-lg shadow-lg">
+                                </div>
+                            @endforeach
+                        @else
+                            <p class="text-gray-500 text-center">Keine Bilder vorhanden.</p>
                         @endif
                     </div>
                 @endif

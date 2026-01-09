@@ -38,6 +38,9 @@ class PublicController extends Controller
             ]);
         }
 
+        // Speichere den Zugriff in der Session
+        session(['portfolio_access' => $company->slug]);
+
         return redirect()->route('company.show', ['slug' => $company->slug]);
     }
 

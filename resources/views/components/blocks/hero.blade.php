@@ -3,7 +3,6 @@
 @php
     $alignment = $data['alignment'] ?? 'center';
     $backgroundImage = null;
-
     if (!empty($data['background_image'])) {
         // Handle media library image
         if (is_numeric($data['background_image'])) {
